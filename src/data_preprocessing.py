@@ -1,46 +1,60 @@
 import pandas as pd
+import os
 
-#fill with real csv when ready
-url_flu_data_1 = 'data/raw/flu_data_source_1.csv'
-url_flu_data_2 = 'data/raw/flu_data_source_2.csv'
+raw_data_path = 'data/raw/'
+uber_data_file = 'uber.csv' 
 
-# Load datasets
-flu_data_1 = pd.read_csv(url_flu_data_1)
-flu_data_2 = pd.read_csv(url_flu_data_2)
+# Combine paths
+file_path = os.path.join(raw_data_path, uber_data_file)
 
-# Basic exploration (optional) LEAVE FOR NOW
-# print("Flu Data 1 Overview:")
-# print(flu_data_1.head())
-# print("Flu Data 2 Overview:")
-# print(flu_data_2.head())
+# Step 2: Load the Uber dataset
+try:
+    uber_data = pd.read_csv(file_path)
+except FileNotFoundError:
+    print(f"File {file_path} not found. Please check the name and location.")
+    raise
 
+# Optional: Basic exploration
+# print("Uber Data Overview:")
+# print(uber_data.head())
 
-def clean_flu_data(data):
-    # Example cleaning process
-    # Assuming the dataset has these common columns; adjust as necessary
-    # - 'Date': represented as date of the week
-    # - 'Flu_Cases': number of reported flu cases
-    
-    # Converts the dates tro readable time
-    if 'Date' in data.columns:
-        data['Date'] = pd.to_datetime(data['Date'])
-    
-    # Drop duplicates
+def clean_uber_data(data):
+    """
+    Clean the Uber trip data.
+
+    Parameters:
+        data (DataFrame): The Uber trip data to clean.
+
+    Returns:
+        DataFrame: The cleaned Uber trip data.
+    """
+
+    # Step 1: Convert 'pickup_datetime' to datetime format
+    if 'pickup_datetime' in data.columns:
+        data['pickup_datetime'] = pd.to_datetime(data['pickup_datetime'], errors='coerce')
+        
+    # Step 2: Drop duplicates
     data.drop_duplicates(inplace=True)
-    
-    # Drop 0s 
-    if 'Flu_Cases' in data.columns:
-        data['Flu_Cases'].fillna(0, inplace=True) 
+
+    # Step 3: Handle missing values
+    # Drop rows with missing 'key' or 'fare_amount'
+    data.dropna(subset=['key', 'fare_amount'], inplace=True)
+
+    # Fill missing 'passenger_count' with 0
+    if 'passenger_count' in data.columns:
+        data['passenger_count'].fillna(0, inplace=True)
+
+    # Ensure 'fare_amount' is treated as a float
+    if 'fare_amount' in data.columns:
+        data['fare_amount'] = data['fare_amount'].astype(float)
 
     return data
 
-flu_data_clean_1 = clean_flu_data(flu_data_1)
-flu_data_clean_2 = clean_flu_data(flu_data_2)
+# Step 4: Clean the Uber data
+cleaned_uber_data = clean_uber_data(uber_data)
 
-#Combines cleaned datasets (only if we need it)
-combined_flu_data = pd.concat([flu_data_clean_1, flu_data_clean_2], ignore_index=True)
+# Step 5: Save the cleaned Uber dataset to a CSV file
+cleaned_data_path = 'data/processed/uber_data_cleaned.csv'
+cleaned_uber_data.to_csv(cleaned_data_path, index=False)
 
-# How to save to CSV files
-combined_flu_data.to_csv('data/processed/flu_data_cleaned.csv', index=False)
-
-print("Cleaned flu data saved to data/processed/flu_data_cleaned.csv.")
+print(f"Cleaned Uber data saved to {cleaned_data_path}.")
