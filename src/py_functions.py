@@ -10,7 +10,7 @@ load_dotenv()
 
 # Load shapefiles
 boros = gpd.read_file("data/raw/BoroughData.geojson")
-
+print(boros.head())
 #Initalizing variables
 pickup_coords = None
 dropoff_coords = None
@@ -29,20 +29,19 @@ def geocode_address(address):
         # Extract coordinates and ensure they are in (latitude, longitude) order
         coordinates = geocode_result['features'][0]['geometry']['coordinates']
         print(f"Coordinates found: {coordinates}")  # Debugging line
-        return coordinates[0], coordinates[1]  # Return (latitude, longitude)
+        return coordinates[1], coordinates[0]  # Return (latitude, longitude)
     
     except Exception as e:
         print(f"Error geocoding address '{address}': {e}")
         return None, None
 def check_boro(coord1, coord2):
     # Create Point objects from the coordinates
-    point1 = Point(coord1)  # (longitude, latitude)
-    point2 = Point(coord2)  # (longitude, latitude)
+    point1 = Point(coord1[1], coord1[0])  # (longitude, latitude)
+    point2 = Point(coord2[1], coord2[0])  # (longitude, latitude)
 
     # Check if the points are within any of the borough geometries
-    in_boro1 = boros['geometry'].contains(point1).any()
-    in_boro2 = boros['geometry'].contains(point2).any()
-
+    in_boro1 = boros['geometry'].apply(lambda geom: geom.contains(point1)).any()
+    in_boro2 = boros['geometry'].apply(lambda geom: geom.contains(point2)).any()
     if pickup_coords and dropoff_coords:
         print(f"Pickup Coordinates: {pickup_coords}")  # (longitude, latitude)
         print(f"Dropoff Coordinates: {dropoff_coords}")  # (longitude, latitude)
