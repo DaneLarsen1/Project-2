@@ -10,8 +10,8 @@ load_dotenv()
 boros = gpd.read_file("data/raw/BoroughData.geojson")
 
 #Initalizing variables
-pickup_coords ="Nothing"
-dropoff_coords = "Nothing"
+pickup_coords = None
+dropoff_coords = None
 def geocode_address(address):
     # Get the API key from the environment variable
     api_key = os.getenv('API_KEY')
