@@ -5,6 +5,7 @@ import interactivefunctions
 import folium
 import webbrowser
 import os
+import fare_estimator
 class MapApp:
     def __init__(self, master):
         self.master = master
@@ -22,27 +23,38 @@ class MapApp:
         self.entry_dropoff = tk.Entry(master, width=50)
         self.entry_dropoff.pack(pady=5)
 
+        self.label_passenger_count = tk.Label(master, text="Enter Number of Passengers:")
+        self.label_passenger_count.pack(pady=5)
+
+        self.entry_passenger_count = tk.Entry(master, width=10)
+        self.entry_passenger_count.pack(pady=5)
+
         self.button = tk.Button(master, text="Get Coordinates", command=self.get_addresses)
         self.button.pack(pady=20)
 
     def get_addresses(self):
         pickup_address = self.entry_pickup.get()
         dropoff_address = self.entry_dropoff.get()
+        passenger_count = self.entry_passenger_count.get()
 
         if not pickup_address or not dropoff_address:
             messagebox.showwarning("Input Error", "Please enter both pickup and dropoff addresses.")
             return
+        
+        #Convert passenger count to int
+        self.passenger_count = int(passenger_count)
+
         #Calling the geocoding function
         pickup_coords = interactivefunctions.geocode_address(pickup_address)
         dropoff_coords = interactivefunctions.geocode_address(dropoff_address)
         
-        #Check iff coordinates are in boros
+        #Check if coordinates are in boros
         if pickup_coords and dropoff_coords:
-            pickup_boro = interactivefunctions.check_boro(pickup_coords, interactivefunctions.boros)
-            dropoff_boro = interactivefunctions.check_boro(dropoff_coords, interactivefunctions.boros)
+            self.pickup_boro = interactivefunctions.check_boro(pickup_coords, interactivefunctions.boros)
+            self.dropoff_boro = interactivefunctions.check_boro(dropoff_coords, interactivefunctions.boros)
 
-            print(f"Pickup Coordinates: {pickup_coords}, Borough: {pickup_boro}")
-            print(f"Dropoff Coordinates: {dropoff_coords}, Borough: {dropoff_boro}")
+            print(f"Pickup Coordinates: {pickup_coords}, Borough: {self.pickup_boro}")
+            print(f"Dropoff Coordinates: {dropoff_coords}, Borough: {self.dropoff_boro}")
 
             #Displaying the map with coordinate pins
             self.display_map(pickup_coords, dropoff_coords)
@@ -79,10 +91,10 @@ class MapApp:
 
     def find_route(self, pickup_coords, dropoff_coords, m):
         # Call the get_route function with the coordinates
-        distance, duration, line_coordinates = interactivefunctions.get_route(pickup_coords, dropoff_coords)
+        self.distance, duration, line_coordinates = interactivefunctions.get_route(pickup_coords, dropoff_coords)
 
         # Print the returned values for debugging
-        print("Distance:", distance)
+        print("Distance:", self.distance)
         print("Duration:", duration)
         print("Line Coordinates:", line_coordinates)
 
@@ -109,6 +121,25 @@ class MapApp:
         # Optionally, you can save the updated map again
         m.save('updated_map.html')
         webbrowser.open('file://' + os.path.realpath('updated_map.html'))
+
+        #Debbugging print to confirm things are still working
+        print("Route added, creating fare button")
+
+        # Add a button to calculate fare
+        self.fare_button = tk.Button(self.master, text="Calculate Fare", command=self.calculate_fare)
+        self.fare_button.pack(pady=20)
+
+
+
+        # Label to display estimated fare
+        self.fare_label = tk.Label(self.map_window, text="")
+        self.fare_label.pack(pady=5)
+    def calculate_fare(self):
+        # Call the fare estimation function
+        estimated_fare = fare_estimator.fare_estimation(self.distance, self.passenger_count, self.pickup_boro, self.dropoff_boro)  # Ensure this function returns the estimated fare
+        # Update the fare label with the estimated fare
+        self.fare_label.config(text=f"Estimated Fare: ${estimated_fare:.2f}")
+
 
 if __name__ == '__main__':
     root = tk.Tk()
