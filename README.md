@@ -2,7 +2,7 @@
 
 ## Brief Project Description
 This project preprocesses Uber trip data to prepare it for building an AI model that predicts Uber ride costs. The primary objectives include cleaning and transforming the data to ensure it is suitable for accurate and meaningful analysis. Key preprocessing steps involve handling missing values, removing duplicates, validating coordinates, and engineering features such as pickup hour, day of the week, season, and trip distance in miles.
-
+It then uses this data to train a predictive model so the user can determine what their fare will be based off of time and location. 
 ---
 
 ## Table of Contents
