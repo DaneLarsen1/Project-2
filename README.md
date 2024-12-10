@@ -1,59 +1,57 @@
-Features
+Uber AI Data Preprocessing
+Brief Project Description
+This project focuses on preprocessing Uber trip data to clean and transform it for building an AI model that predicts the costs of Uber rides. The main objectives are to clean the data by handling missing values, removing duplicates, and validating coordinates, and to transform the data by creating new features such as pickup hour, day of the week, season, and trip distance in miles.
 
-1. Data Cleaning
-
-Handles missing values by:
-
-Dropping rows with missing key or fare_amount.
-
-Filling missing passenger_count values with 0.
-
-Converts pickup_datetime to a proper datetime format.
-
-Ensures fare_amount is treated as a float.
-
-Removes duplicate entries to ensure data consistency.
-
-2. Data Transformation
-
-Extracts new features from the data:
-
-Pickup Hour: Extracted from the pickup_datetime column.
-
-Day of the Week: Encodes the day (Monday=0, Sunday=6).
-
-Season Indicator: Maps months to corresponding seasons (Winter, Spring, Summer, Fall).
-
-Trip Distance: Calculates distance in miles between pickup and dropoff coordinates using the Haversine formula (via geopy.distance.great_circle).
-
-3. Data Export
-
-Cleaned and transformed data is saved to a CSV file in a data/processed directory.
-
+Table of Contents
+Introduction
+Data Information
+Getting Started
+Methodology
+Results
+Dependencies
 Usage
+Contributing
+Acknowledgments
+Introduction
+This project aims to preprocess Uber trip data to make it suitable for building an AI model that predicts the costs of Uber rides. The preprocessing steps include cleaning the data by handling missing values, removing duplicates, and validating coordinates, as well as transforming the data by creating new features such as pickup hour, day of the week, season, and trip distance in miles. The significance of this project lies in its ability to prepare raw data for more accurate and meaningful analysis, ultimately leading to better predictions of Uber ride costs.
 
-Step 1: Clean the Data
+Data Information
+Source
+The data used in this project is sourced from Uber's trip records.
 
-Run the cleaning script to remove duplicates, handle missing values, and standardize the data.
+Description
+The dataset contains information about Uber trips, including pickup and dropoff locations, times, fare amounts, and passenger counts.
 
-python src/data_cleaning.py
+Structure
+The main features/variables in the dataset include:
 
-Step 2: Transform the Data
+pickup_datetime: The date and time when the trip started.
+pickup_latitude: The latitude of the pickup location.
+pickup_longitude: The longitude of the pickup location.
+dropoff_latitude: The latitude of the dropoff location.
+dropoff_longitude: The longitude of the dropoff location.
+fare_amount: The fare amount for the trip.
+passenger_count: The number of passengers in the trip.
+Getting Started
+To get started with this project, clone the repository and install the required dependencies.
 
-Use the transformation script to extract new features and calculate distances.
-
-python src/data_transformation.py
-
-Step 3: Visualize Data (Planned)
-
-Once the data_visualization.py module is complete, use it to generate insights and visualizations.
+Methodology
+Data Loading: Load the raw Uber trip data from a CSV file.
+Data Cleaning: Clean the data by handling missing values, removing duplicates, and validating coordinates.
+Data Transformation: Transform the data by creating new features such as pickup hour, day of the week, season, and trip distance in miles.
+Data Saving: Save the cleaned and transformed data to CSV files for further analysis.
+Results
+The cleaned and transformed data is saved in the processed directory as uber_data_cleaned.csv and uber_data_transformed.csv.
 
 Dependencies
-
-Python 3.7+
-
 pandas
-
 numpy
-
 geopy
+Usage
+To preprocess the Uber data, run the data_preprocessing.py script.
+
+Contributing
+Contributions are welcome! Please fork the repository and submit a pull request.
+
+Acknowledgments
+Special thanks to Uber for providing the trip data used in this project.
